@@ -55,7 +55,9 @@ const ReadStudentData = async (req, res) => {
 
 const searchByName = async (req, res) => {
   try {
-    const { first_name, last_name } = req.body; // Extracting first name and last name from request body
+    const { first_name, last_name } = req.body;
+    const page = req.query.page || 1;
+    const limit = 20;
 
     let query = {};
 
@@ -78,12 +80,26 @@ const searchByName = async (req, res) => {
       });
     }
 
-    const results = await Student.find(query).select("-__v");
+    const totalResults = await Student.countDocuments(query);
+    const totalPages = Math.ceil(totalResults / limit);
+    let currentPage = parseInt(page);
+    if (currentPage > totalPages) {
+      currentPage = totalPages;
+    }
+
+    const skip = (currentPage - 1) * limit;
+
+    const results = await Student.find(query)
+      .select("-__v")
+      .skip(skip)
+      .limit(limit);
 
     if (results.length > 0) {
       return res.status(200).json({
         success: true,
-        totalResults: results.length,
+        currentPage: currentPage,
+        totalPages: totalPages,
+        totalResults: totalResults,
         data: results,
       });
     }
@@ -99,18 +115,21 @@ const searchByName = async (req, res) => {
 
 const filterStudents = async (req, res) => {
   try {
-    let { domain, gender, availability } = req.body; // Extracting parameters from request body and converting to lowercase
+    let { domain, gender, availability } = req.body;
+    const page = req.query.page || 1;
+    const limit = 20;
+
     const filterCriteria = {};
 
     if (domain && gender) {
-      filterCriteria.domain = domain; // Adding domain filter
-      filterCriteria.gender = gender; // Adding gender filter
+      filterCriteria.domain = domain;
+      filterCriteria.gender = gender;
     } else if (domain) {
-      filterCriteria.domain = domain; // Adding domain filter if provided
+      filterCriteria.domain = domain;
     } else if (gender) {
-      filterCriteria.gender = gender; // Adding gender filter if provided
+      filterCriteria.gender = gender;
     } else if (availability !== null) {
-      filterCriteria.available = availability; // Adding availability filter if provided
+      filterCriteria.available = availability;
     } else {
       return res.status(400).json({
         success: false,
@@ -118,12 +137,26 @@ const filterStudents = async (req, res) => {
       });
     }
 
-    const results = await Student.find(filterCriteria).select("-__v");
+    const totalResults = await Student.countDocuments(filterCriteria);
+    const totalPages = Math.ceil(totalResults / limit);
+    let currentPage = parseInt(page);
+    if (currentPage > totalPages) {
+      currentPage = totalPages;
+    }
+
+    const skip = (currentPage - 1) * limit;
+
+    const results = await Student.find(filterCriteria)
+      .select("-__v")
+      .skip(skip)
+      .limit(limit);
 
     if (results.length > 0) {
       return res.status(200).json({
         success: true,
-        totalResults: results.length,
+        currentPage: currentPage,
+        totalPages: totalPages,
+        totalResults: totalResults,
         data: results,
       });
     }
