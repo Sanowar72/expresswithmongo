@@ -30,7 +30,7 @@ Below are the endpoints available in the Student Management API.
 
 ### Search Students by Name
 
-- **Method:** PUT
+- **Method:** GET
 - **URL:** /api/users/search
 - **Request Body:** Object containing `first_name` and/or `last_name`
 - **Description:** Searches students by first name and/or last name.
@@ -38,7 +38,7 @@ Below are the endpoints available in the Student Management API.
 
 ### Filter Students
 
-- **Method:** PUT
+- **Method:** GET
 - **URL:** /api/users/filter
 - **Request Body:** Object containing filtering parameters (`domain`, `gender`, `availability`)
 - **Description:** Filters students by domain, gender, and availability.

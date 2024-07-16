@@ -115,7 +115,7 @@ const searchByName = async (req, res) => {
 
 const filterStudents = async (req, res) => {
   try {
-    let { domain, gender, availability } = req.body;
+    let { domain, gender, available } = req.body;
     const page = req.query.page || 1;
     const limit = 20;
 
@@ -128,8 +128,8 @@ const filterStudents = async (req, res) => {
       filterCriteria.domain = domain;
     } else if (gender) {
       filterCriteria.gender = gender;
-    } else if (availability !== null) {
-      filterCriteria.available = availability;
+    } else if (available !== null) {
+      filterCriteria.available = available;
     } else {
       return res.status(400).json({
         success: false,

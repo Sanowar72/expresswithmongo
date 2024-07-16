@@ -1,7 +1,5 @@
 import express from "express";
-const app = express();
 import {
-  Home,
   AddStudentData,
   ReadStudentData,
   searchByName,
@@ -13,9 +11,14 @@ import {
 
 const router = express.Router();
 
+// Route for reading and adding student data
 router.route("/").get(ReadStudentData).post(AddStudentData);
-router.put("/search", searchByName);
-router.put("/filter", filterStudents);
+
+// Routes for searching and filtering students
+router.get("/search", searchByName);
+router.get("/filter", filterStudents);
+
+// Routes for operations on specific student by ID
 router.route("/:id").get(GetStudentById).put(UpdateById).delete(DeleteById);
 
 export default router;
