@@ -1,11 +1,12 @@
-import dotenv from "dotenv";
 import express from "express";
+import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import router from "./routes/studentRoutes/StudentRoutes.js";
+import userRouter from "./routes/userRoutes/UserRoutes.js";
 import connectDB from "./utils/DatabaseConnection.js";
 import insertDefaultUser from "./utils/insertDefaultUser.js";
-import userRouter from "./routes/userRoutes/UserRoutes.js";
-import cookieParser from "cookie-parser";
+import authenticate from "./utils/Authenticate.js";
 
 dotenv.config();
 
@@ -22,25 +23,22 @@ const corsOptions = {
   optionsSuccessStatus: 200,
 };
 
-// app.use(cors(corsOptions));
-// app.options("*", cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api/users", router);
+
+app.use("/api/users", authenticate, router);
 app.use("/api/auth", userRouter);
+
 app.get("/", (req, res) => {
   res.send("Hello, Express!");
 });
 
 const startServer = async () => {
   try {
-    // Connect to the database
     await connectDB();
-
-    // Insert default user if none exist
     await insertDefaultUser();
 
-    // Start the server
     app.listen(port, () => {
       console.log(`Server is listening on port ${port}`);
     });

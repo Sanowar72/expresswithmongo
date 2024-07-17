@@ -1,19 +1,18 @@
-import bcrypt from "bcryptjs";
 import User from "../models/UserModel.js";
+import { hashPassword } from "../controller/UserController.js";
 
 const insertDefaultUser = async () => {
   try {
     const userCount = await User.countDocuments();
 
     if (userCount === 0) {
-      const salt = bcrypt.genSaltSync(10);
-      const hashedPassword = bcrypt.hashSync("password123", salt);
-
+      const { salt, hash } = hashPassword("password123");
       const defaultUser = new User({
         first_name: "Default",
         last_name: "User",
         email: "default@example.com",
-        password: hashedPassword,
+        password: hash,
+        salt: salt,
         gender: "Other",
         phone: "1234567890",
       });
