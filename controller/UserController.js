@@ -23,7 +23,6 @@ const signup = async (req, res) => {
   try {
     let existingUser = await User.findOne({ email });
     if (existingUser) {
-      console.log("Email already exists:", email);
       return res
         .status(400)
         .json({ success: false, message: "Email already exists" });
@@ -82,7 +81,6 @@ const login = async (req, res) => {
       secure: process.env.NODE_ENV !== "production",
       maxAge: 3600000,
     });
-
     res.json({ success: true, message: "Login successful" });
   } catch (error) {
     console.error("Login error:", error);
