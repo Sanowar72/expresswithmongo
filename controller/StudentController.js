@@ -115,28 +115,31 @@ const searchByName = async (req, res) => {
 
 const filterStudents = async (req, res) => {
   try {
-    let { domain, gender, available } = req.body;
+    const { domain, gender, available } = req.body;
     const page = req.query.page || 1;
     const limit = 20;
 
     const filterCriteria = {};
 
-    if (domain && gender) {
+    // Check and add each filter condition independently
+    if (domain) {
       filterCriteria.domain = domain;
+    }
+    if (gender) {
       filterCriteria.gender = gender;
-    } else if (domain) {
-      filterCriteria.domain = domain;
-    } else if (gender) {
-      filterCriteria.gender = gender;
-    } else if (available !== null) {
+    }
+    // Check specifically for true or false values of available
+    if (available !== undefined) {
       filterCriteria.available = available;
-    } else {
+    }
+
+    // If no filter criteria provided, return an error
+    if (Object.keys(filterCriteria).length === 0) {
       return res.status(400).json({
         success: false,
         message: "At least one filtering parameter is required",
       });
     }
-
     const totalResults = await Student.countDocuments(filterCriteria);
     const totalPages = Math.ceil(totalResults / limit);
     let currentPage = parseInt(page);
